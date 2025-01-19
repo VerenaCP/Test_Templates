@@ -85,6 +85,46 @@
                 container.innerHTML = `<p>Fehler: ${error.message}</p>`;
             });
     </script>
+    <script>
+        // JSON-Datei laden und debuggen
+        fetch('Zuechter_Version1.json') // JSON-Datei
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Geladene JSON-Daten:', data); // JSON vollständig ausgeben
+    
+                const container = document.getElementById('template-container');
+    
+                // Debug: Überprüfen, ob "content" existiert
+                if (!data.content || data.content.length === 0) {
+                    console.warn('Das JSON enthält kein "content"-Array.');
+                    container.innerHTML = '<p>Keine Inhalte im JSON gefunden.</p>';
+                    return;
+                }
+    
+                // Debug: Inhalt von "content" anzeigen
+                console.log('Content:', data.content);
+    
+                // Überprüfen, ob "elements" in content[0] existiert
+                if (!data.content[0].elements || data.content[0].elements.length === 0) {
+                    console.warn('Das "elements"-Array in content[0] ist leer oder fehlt.');
+                    container.innerHTML = '<p>Keine Elemente im JSON gefunden.</p>';
+                    return;
+                }
+    
+                // Elemente rendern
+                renderElements(data.content[0].elements, container);
+            })
+            .catch(error => {
+                console.error('Fehler beim Verarbeiten der JSON-Daten:', error);
+                const container = document.getElementById('template-container');
+                container.innerHTML = `<p>Fehler beim Laden der Daten: ${error.message}</p>`;
+            });
+    </script>    
 </body>
 </html>
 
