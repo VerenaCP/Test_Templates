@@ -41,16 +41,26 @@
                     const div = document.createElement('div');
                     div.className = 'element';
 
+                    // Standardbild definieren
+                    const defaultImage = 'https://via.placeholder.com/300x200?text=Bild+fehlt';
+
+                    // URL des Bildes prüfen
+                    const imageUrl = element.settings?.repeater_bg_image?.url || defaultImage;
+
                     // HTML für jedes Element erstellen
                     div.innerHTML = `
                         <h2>${element.settings.title || 'Kein Titel'}</h2>
-                        <img src="${element.settings.repeater_bg_image.url}" alt="Bild">
+                        <img src="${imageUrl}" alt="Bild" onerror="this.src='${defaultImage}'">
                     `;
 
                     container.appendChild(div);
                 });
             })
-            .catch(error => console.error('Fehler beim Laden des JSON:', error));
+            .catch(error => {
+                console.error('Fehler beim Laden des JSON:', error);
+                const container = document.getElementById('template-container');
+                container.innerHTML = `<p>Fehler beim Laden der Daten: ${error.message}</p>`;
+            });
     </script>
 </body>
 </html>
