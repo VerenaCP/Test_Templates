@@ -28,64 +28,44 @@
 <body>
     <h1>Website Template Vorschau</h1>
     <div id="template-container"></div>
-
     <script>
         // Funktion, um verschachtelte Elemente zu rendern
         function renderElements(elements, container) {
             elements.forEach(element => {
                 const div = document.createElement('div');
                 div.className = 'element';
-
+    
+                // Debugging: Inhalt des aktuellen Elements anzeigen
+                console.log('Aktuelles Element:', element);
+    
                 // Fallback-Bild
                 const defaultImage = 'https://via.placeholder.com/300x200?text=Bild+fehlt';
-
-                // Titel und Bild aus JSON extrahieren
-                const title = element.settings?.prefix_text || element.settings?.title || 'Kein Titel vorhanden';
+    
+                // Titel aus verschiedenen möglichen Schlüsseln extrahieren
+                const title =
+                    element.settings?.prefix_text || // Titel aus "prefix_text"
+                    element.settings?.title ||       // Titel aus "title"
+                    element.settings?.animated_text || // Titel aus "animated_text"
+                    element.settings?.clipped_text || // Titel aus "clipped_text"
+                    'Kein Titel vorhanden';          // Fallback-Titel
+    
+                // Bild-URL extrahieren (wenn vorhanden)
                 const imageUrl = element.settings?.repeater_bg_image?.url || defaultImage;
-
+    
                 // HTML für das Element erstellen
                 div.innerHTML = `
                     <h2>${title}</h2>
                     <img src="${imageUrl}" alt="Bild" onerror="this.src='${defaultImage}'">
                 `;
                 container.appendChild(div);
-
+    
                 // Wenn weitere verschachtelte "elements" vorhanden sind
                 if (element.elements && element.elements.length > 0) {
                     renderElements(element.elements, container); // Rekursiver Aufruf
                 }
             });
         }
-
-        // JSON-Datei laden und rendern
-        fetch('Zuechter_Version1.json') // JSON-Datei: Ändere den Dateinamen falls nötig
-            .then(response => {
-                console.log('HTTP-Response Status:', response.status); // Debugging
-                if (!response.ok) {
-                    throw new Error(`HTTP-Fehler: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Geladene JSON-Daten:', data); // Vollständige JSON-Daten in der Konsole anzeigen
-
-                const container = document.getElementById('template-container');
-
-                // Prüfen, ob "content" und "elements" existieren
-                if (data.content && data.content[0]?.elements) {
-                    renderElements(data.content[0].elements, container); // Daten rendern
-                } else {
-                    container.innerHTML = '<p>Keine gültigen Daten zum Anzeigen gefunden.</p>';
-                    console.warn('Keine gültigen Elemente in der JSON-Datei gefunden.');
-                }
-            })
-            .catch(error => {
-                console.error('Fehler beim Laden oder Verarbeiten der JSON-Daten:', error);
-                const container = document.getElementById('template-container');
-                container.innerHTML = `<p>Fehler: ${error.message}</p>`;
-            });
-    </script>
-    <script>
+    
         // JSON-Datei laden und debuggen
         fetch('Zuechter_Version1.json') // JSON-Datei
             .then(response => {
@@ -95,36 +75,24 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Geladene JSON-Daten:', data); // JSON vollständig ausgeben
+                console.log('Geladene JSON-Daten:', data); // Vollständige JSON-Daten anzeigen
     
                 const container = document.getElementById('template-container');
     
-                // Debug: Überprüfen, ob "content" existiert
-                if (!data.content || data.content.length === 0) {
-                    console.warn('Das JSON enthält kein "content"-Array.');
-                    container.innerHTML = '<p>Keine Inhalte im JSON gefunden.</p>';
-                    return;
+                // Prüfen, ob "content" und "elements" existieren
+                if (data.content && data.content[0]?.elements) {
+                    renderElements(data.content[0].elements, container); // Elemente rendern
+                } else {
+                    container.innerHTML = '<p>Keine gültigen Daten im JSON gefunden.</p>';
+                    console.warn('Keine gültigen Elemente in der JSON-Datei gefunden.');
                 }
-    
-                // Debug: Inhalt von "content" anzeigen
-                console.log('Content:', data.content);
-    
-                // Überprüfen, ob "elements" in content[0] existiert
-                if (!data.content[0].elements || data.content[0].elements.length === 0) {
-                    console.warn('Das "elements"-Array in content[0] ist leer oder fehlt.');
-                    container.innerHTML = '<p>Keine Elemente im JSON gefunden.</p>';
-                    return;
-                }
-    
-                // Elemente rendern
-                renderElements(data.content[0].elements, container);
             })
             .catch(error => {
                 console.error('Fehler beim Verarbeiten der JSON-Daten:', error);
                 const container = document.getElementById('template-container');
-                container.innerHTML = `<p>Fehler beim Laden der Daten: ${error.message}</p>`;
+                container.innerHTML = `<p>Fehler: ${error.message}</p>`;
             });
-    </script>    
+    </script>
 </body>
 </html>
 
