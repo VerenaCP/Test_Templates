@@ -62,5 +62,51 @@
                 container.innerHTML = `<p>Fehler beim Laden der Daten: ${error.message}</p>`;
             });
     </script>
+    <script>
+        // JSON-File laden
+        fetch('Zuechter_Version1.json') // Ändere hier den Dateinamen entsprechend
+            .then(response => {
+                console.log('HTTP-Response Status:', response.status); // Debug: Zeigt den HTTP-Status
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('JSON-Daten geladen:', data); // Debug: Zeigt die geladenen JSON-Daten
+                const container = document.getElementById('template-container');
+    
+                if (!data.elements || data.elements.length === 0) {
+                    container.innerHTML = '<p>Keine Elemente im JSON gefunden.</p>';
+                    console.warn('Keine "elements" im JSON.');
+                    return;
+                }
+    
+                // JSON-Elemente iterieren
+                data.elements.forEach(element => {
+                    const div = document.createElement('div');
+                    div.className = 'element';
+    
+                    // Fallback-Bild definieren
+                    const defaultImage = 'https://via.placeholder.com/300x200?text=Bild+fehlt';
+    
+                    // URL des Bildes prüfen
+                    const imageUrl = element.settings?.repeater_bg_image?.url || defaultImage;
+    
+                    // HTML für jedes Element erstellen
+                    div.innerHTML = `
+                        <h2>${element.settings.title || 'Kein Titel vorhanden'}</h2>
+                        <img src="${imageUrl}" alt="Bild" onerror="this.src='${defaultImage}'">
+                    `;
+    
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Fehler beim Laden des JSON:', error); // Debug: Zeigt Fehler in der Konsole
+                const container = document.getElementById('template-container');
+                container.innerHTML = `<p>Fehler: ${error.message}</p>`;
+            });
+    </script>
 </body>
 </html>
