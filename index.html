@@ -4,9 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klickdummy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .template {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Willkommen auf meiner Klickdummy-Seite!</h1>
-    <p>Dies ist eine Vorschau des Website-Templates.</p>
+    <h1>Klickdummy</h1>
+    <div id="template-container"></div>
+
+    <script>
+        // JSON-File laden
+        fetch('Site_mountain_parallax.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('template-container');
+
+                // Beispiel: JSON-Inhalte dynamisch anzeigen
+                data.sections.forEach(section => {
+                    const div = document.createElement('div');
+                    div.className = 'template';
+                    div.innerHTML = `
+                        <h2>${section.title}</h2>
+                        <p>${section.content}</p>
+                        <a href="${section.link}" class="button">Mehr erfahren</a>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Fehler beim Laden des JSON-Files:', error);
+            });
+    </script>
 </body>
 </html>
